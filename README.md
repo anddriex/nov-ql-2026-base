@@ -27,6 +27,20 @@ npm install
 npx openspec --version
 ```
 
+## Ejecutar el selector de ganadores
+
+```sh
+npm start
+```
+
+Abre `http://127.0.0.1:4173` en el navegador.
+
+## Probar
+
+```sh
+npm test
+```
+
 ## ¿Qué incluye?
 
 | Archivo / carpeta | Para qué sirve |

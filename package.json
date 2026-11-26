@@ -7,7 +7,10 @@
     "node": ">=22.20.0"
   },
   "scripts": {
-    "openspec": "openspec"
+    "openspec": "openspec",
+    "start": "node server.js",
+    "dev": "node server.js",
+    "test": "node --test"
   },
   "devDependencies": {
     "@fission-ai/openspec": "^2.1.1"

@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#7c3aed" />
+    <title>Selector de ganadores</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="app-header">
+        <div>
+          <p class="eyebrow">Sorteo rápido</p>
+          <h1>Selector de ganadores</h1>
+        </div>
+        <div class="participant-count" aria-live="polite">
+          <strong id="participantCount">0</strong>
+          <span id="participantLabel">participantes</span>
+        </div>
+      </header>
+
+      <section class="workspace" aria-label="Configuración del sorteo">
+        <div class="participants-panel">
+          <form id="participantForm" autocomplete="off">
+            <label for="participantName">Nombre del participante</label>
+            <div class="input-row">
+              <input
+                id="participantName"
+                name="participantName"
+                type="text"
+                maxlength="60"
+                placeholder="Ej. María"
+                required
+              />
+              <button class="add-button" type="submit">Agregar</button>
+            </div>
+          </form>
+
+          <p id="formError" class="form-error" role="alert"></p>
+
+          <div class="list-heading">
+            <h2>Participantes</h2>
+            <button id="clearButton" class="text-button" type="button" hidden>
+              Limpiar todo
+            </button>
+          </div>
+          <ul id="participantList" class="participant-list"></ul>
+          <p id="emptyState" class="empty-state">
+            Agrega al menos dos participantes para comenzar.
+          </p>
+        </div>
+
+        <aside class="draw-panel">
+          <div class="draw-decoration" aria-hidden="true">
+            <span></span><span></span><span></span>
+          </div>
+          <div id="winnerContent" class="winner-content" aria-live="polite">
+            <p class="winner-kicker">El sorteo está listo</p>
+            <h2 id="winnerTitle">¿Quién ganará?</h2>
+            <p id="winnerName" class="winner-name" hidden></p>
+          </div>
+          <button id="drawButton" class="draw-button" type="button" disabled>
+            Sortear ganador
+          </button>
+        </aside>
+      </section>
+    </main>
+
+    <template id="participantTemplate">
+      <li class="participant-item">
+        <span class="participant-avatar"></span>
+        <span class="participant-name"></span>
+        <button class="remove-button" type="button" aria-label="Eliminar participante">
+          <span aria-hidden="true">×</span>
+        </button>
+      </li>
+    </template>
+
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>
