@@ -1,4 +1,4 @@
-import { normalizeName, selectWinner } from "./raffle.js";
+import { createRaffle } from "./raffle.js";
 
 const participantForm = document.querySelector("#participantForm");
 const participantName = document.querySelector("#participantName");
@@ -15,10 +15,11 @@ const winnerKicker = document.querySelector(".winner-kicker");
 const winnerTitle = document.querySelector("#winnerTitle");
 const winnerName = document.querySelector("#winnerName");
 
-let participants = [];
+const raffle = createRaffle();
 
 function renderParticipants() {
   participantList.replaceChildren();
+  const participants = raffle.getParticipants();
 
   participants.forEach((name, index) => {
     const item = participantTemplate.content.cloneNode(true);
@@ -45,44 +46,35 @@ function renderParticipants() {
   emptyState.hidden = count > 0;
   clearButton.hidden = count === 0;
   drawButton.disabled = count < 2;
-
-  if (count === 0) {
-    resetWinner();
-  }
 }
 
-function resetWinner() {
-  drawPanel.classList.remove("is-winner");
-  winnerKicker.textContent = "El sorteo está listo";
-  winnerTitle.textContent = "¿Quién ganará?";
-  winnerName.hidden = true;
-  winnerName.textContent = "";
+function renderWinner() {
+  const winner = raffle.getWinner();
+  const hasWinner = winner !== null;
+
+  drawPanel.classList.toggle("is-winner", hasWinner);
+  winnerKicker.textContent = hasWinner ? "¡Tenemos un ganador!" : "El sorteo está listo";
+  winnerTitle.textContent = hasWinner ? "" : "¿Quién ganará?";
+  winnerName.textContent = winner ?? "";
+  winnerName.hidden = !hasWinner;
 }
 
 participantForm.addEventListener("submit", (event) => {
   event.preventDefault();
-  const name = normalizeName(participantName.value);
-
-  if (!name) {
-    formError.textContent = "Escribe el nombre de un participante.";
-    participantName.focus();
+  const result = raffle.addParticipant(participantName.value);
+  if (!result.ok) {
+    formError.textContent =
+      result.reason === "duplicate"
+        ? "Ese participante ya está en la lista."
+        : "Escribe el nombre de un participante.";
+    if (result.reason === "duplicate") participantName.select();
+    else participantName.focus();
     return;
   }
 
-  const alreadyExists = participants.some(
-    (participant) => participant.toLocaleLowerCase("es") === name.toLocaleLowerCase("es"),
-  );
-
-  if (alreadyExists) {
-    formError.textContent = "Ese participante ya está en la lista.";
-    participantName.select();
-    return;
-  }
-
-  participants.push(name);
   participantName.value = "";
   formError.textContent = "";
-  resetWinner();
+  renderWinner();
   renderParticipants();
   participantName.focus();
 });
@@ -91,26 +83,26 @@ participantList.addEventListener("click", (event) => {
   const removeButton = event.target.closest(".remove-button");
   if (!removeButton) return;
 
-  participants.splice(Number(removeButton.dataset.index), 1);
-  resetWinner();
+  const removed = raffle.removeParticipant(Number(removeButton.dataset.index));
+  if (!removed) return;
+
+  renderWinner();
   renderParticipants();
 });
 
 clearButton.addEventListener("click", () => {
-  participants = [];
+  raffle.clear();
+  renderWinner();
   renderParticipants();
   participantName.focus();
 });
 
 drawButton.addEventListener("click", () => {
-  const winner = selectWinner(participants);
+  const winner = raffle.draw();
   if (!winner) return;
 
-  drawPanel.classList.add("is-winner");
-  winnerKicker.textContent = "¡Tenemos un ganador!";
-  winnerTitle.textContent = "";
-  winnerName.textContent = winner;
-  winnerName.hidden = false;
+  renderWinner();
 });
 
+renderWinner();
 renderParticipants();
